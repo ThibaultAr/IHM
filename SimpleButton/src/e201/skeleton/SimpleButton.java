@@ -36,8 +36,10 @@ public class SimpleButton {
 	private CText label;
 	private CRectangle rect;
 	protected CStateMachine stateMachine;
+	protected int buttonNumber;
 
-	SimpleButton(Canvas canvas, String text) {
+	SimpleButton(Canvas canvas, String text, int buttonNumber) {
+		this.buttonNumber = buttonNumber;
 		label = canvas.newText(0, 0, text, new Font("verdana", Font.PLAIN, 12));
 		rect = canvas.newRectangle(label.getMinX() - 10, label.getMinY() - 10, text.length() * 12 / 2 + 6 + 20,
 				12 + 20);
@@ -70,7 +72,7 @@ public class SimpleButton {
 					}
 				};
 
-				Transition op = new PressOnShape(1, ">> pressed");
+				Transition op = new PressOnShape(SimpleButton.this.buttonNumber, ">> pressed");
 			};
 
 			State pressed = new State() {
@@ -80,7 +82,7 @@ public class SimpleButton {
 					SimpleButton.this.rect.setStroke(initStroke);
 				}
 				
-				Transition po = new ReleaseOnShape(1, ">> over") {
+				Transition po = new ReleaseOnShape(SimpleButton.this.buttonNumber, ">> over") {
 					public void action() {
 						SimpleButton.this.rect.setFillPaint(initColor);
 						SimpleButton.this.action();
@@ -97,7 +99,7 @@ public class SimpleButton {
 				
 				Transition dp = new EnterOnShape(">> pressed");
 
-				Transition di = new Release(1, ">> idle") {
+				Transition di = new Release(SimpleButton.this.buttonNumber, ">> idle") {
 				};
 			};
 
@@ -120,7 +122,7 @@ public class SimpleButton {
 		frame.pack();
 		frame.setVisible(true);
 
-		SimpleButton simple = new SimpleButton(canvas, "simple");
+		SimpleButton simple = new SimpleButton(canvas, "simple", 1);
 		simple.getShape().translateBy(100, 100);
 
 		JFrame viz = new JFrame();
