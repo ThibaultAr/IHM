@@ -14,6 +14,7 @@ import fr.lri.swingstates.canvas.CShape;
 import fr.lri.swingstates.canvas.CStateMachine;
 import fr.lri.swingstates.canvas.CText;
 import fr.lri.swingstates.canvas.Canvas;
+import fr.lri.swingstates.canvas.transitions.ClickOnShape;
 import fr.lri.swingstates.canvas.transitions.EnterOnShape;
 import fr.lri.swingstates.canvas.transitions.EnterOnTag;
 import fr.lri.swingstates.canvas.transitions.LeaveOnShape;
@@ -80,12 +81,12 @@ public class SimpleButton {
 					initColor = SimpleButton.this.rect.getFillPaint();
 					SimpleButton.this.rect.setFillPaint(Color.YELLOW);
 					SimpleButton.this.rect.setStroke(initStroke);
+					armTimer(40, false);
 				}
 				
-				Transition po = new ReleaseOnShape(SimpleButton.this.buttonNumber, ">> over") {
+				Transition po = new ReleaseOnShape(SimpleButton.this.buttonNumber, ">> click") {
 					public void action() {
 						SimpleButton.this.rect.setFillPaint(initColor);
-						SimpleButton.this.action();
 					}
 				};
 
@@ -102,13 +103,41 @@ public class SimpleButton {
 				Transition di = new Release(SimpleButton.this.buttonNumber, ">> idle") {
 				};
 			};
-
+			
+			State click = new State() {
+				public void enter() {
+					SimpleButton.this.action();
+				}
+				
+				Transition cdouble = new ReleaseOnShape(SimpleButton.this.buttonNumber, ">> over") {
+					public void action() {
+						SimpleButton.this.rect.setFillPaint(initColor);
+						SimpleButton.this.actionDoubleClick();
+					}
+				};
+			};
+			
+			State demiClick = new State() {
+				
+			};
 		};
 		this.stateMachine.attachTo(canvas);
 	}
 
 	public void action() {
-		System.out.println("ACTION!");
+		System.out.println("ACTION Click!");
+	}
+	
+	public void actionDemiClick() {
+		System.out.println("ACTION Demi-Click!");
+	}
+	
+	public void actionClickDemi() {
+		System.out.println("ACTION Click-Demi!");
+	}
+	
+	public void actionDoubleClick() {
+		System.out.println("ACTION Double-Click!");
 	}
 
 	public CShape getShape() {
