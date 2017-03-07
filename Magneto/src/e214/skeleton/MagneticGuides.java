@@ -12,8 +12,10 @@ import fr.lri.swingstates.canvas.CSegment;
 import fr.lri.swingstates.canvas.CShape;
 import fr.lri.swingstates.canvas.CStateMachine;
 import fr.lri.swingstates.canvas.Canvas;
-import fr.lri.swingstates.canvas.transitions.PressOnShape;
+import fr.lri.swingstates.canvas.transitions.EnterOnTag;
+import fr.lri.swingstates.canvas.transitions.LeaveOnTag;
 import fr.lri.swingstates.canvas.transitions.PressOnTag;
+import fr.lri.swingstates.canvas.transitions.ReleaseOnTag;
 import fr.lri.swingstates.debug.StateMachineVisualization;
 import fr.lri.swingstates.sm.State;
 import fr.lri.swingstates.sm.Transition;
@@ -60,7 +62,14 @@ public class MagneticGuides extends JFrame {
 					}
 				};
 				
-				Transition pressOnObject = new PressOnTag(CExtensionalTag.class, BUTTON1, ">> oDrag") {
+				Transition pressOnObject = new PressOnTag(oTag, BUTTON1, ">> oDrag") {
+					public void action() {
+						p = getPoint();
+						draggedShape = getShape();
+					}
+				};
+				
+				Transition pressOnLine = new PressOnTag(MagneticGuide.class, BUTTON1, ">> mDrag") {
 					public void action() {
 						p = getPoint();
 						draggedShape = getShape();
@@ -69,6 +78,35 @@ public class MagneticGuides extends JFrame {
 			};
 
 			public State oDrag = new State() {
+				Transition drag = new Drag(BUTTON1) {
+					public void action() {
+						Point2D q = getPoint();
+						draggedShape.translateBy(q.getX() - p.getX(), q.getY() - p.getY());
+						p = q;
+					}
+				};
+				Transition grass = new EnterOnTag(MagneticGuide.class){
+					public void action() {
+						getShape().setStroke(new BasicStroke(4));
+					}
+				};
+				Transition unGrass = new LeaveOnTag(MagneticGuide.class){
+					public void action() {
+						getShape().setStroke(new BasicStroke(2));
+					}
+				};
+				
+				Transition release = new Release(BUTTON1, ">> start") {
+				};
+				
+				Transition relTag = new ReleaseOnTag(MagneticGuide.class, ">> start"){
+					public void action(){
+						getShape().addTag(getTag());
+					}
+				};
+			};
+			
+			public State mDrag = new State() {
 				Transition drag = new Drag(BUTTON1) {
 					public void action() {
 						Point2D q = getPoint();
