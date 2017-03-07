@@ -27,6 +27,7 @@ import fr.lri.swingstates.debug.StateMachineVisualization;
 import fr.lri.swingstates.sm.State;
 import fr.lri.swingstates.sm.Transition;
 import fr.lri.swingstates.sm.transitions.Release;
+import fr.lri.swingstates.sm.transitions.TimeOut;
 
 /**
  * @author Nicolas Roussel (roussel@lri.fr)
@@ -73,7 +74,11 @@ public class SimpleButton {
 					}
 				};
 
-				Transition op = new PressOnShape(SimpleButton.this.buttonNumber, ">> pressed");
+				Transition op = new PressOnShape(SimpleButton.this.buttonNumber, ">> pressed") {
+					public void action() {
+						armTimer(1000, false);
+					}
+				};
 			};
 
 			State pressed = new State() {
@@ -81,9 +86,13 @@ public class SimpleButton {
 					initColor = SimpleButton.this.rect.getFillPaint();
 					SimpleButton.this.rect.setFillPaint(Color.YELLOW);
 					SimpleButton.this.rect.setStroke(initStroke);
-					armTimer(40, false);
 				}
-				
+
+				Transition to = new TimeOut(">> pressed") {
+					public void action() {
+						SimpleButton.this.actionDemiClick();
+					}
+				};
 				Transition po = new ReleaseOnShape(SimpleButton.this.buttonNumber, ">> click") {
 					public void action() {
 						SimpleButton.this.rect.setFillPaint(initColor);
@@ -107,18 +116,36 @@ public class SimpleButton {
 			State click = new State() {
 				public void enter() {
 					SimpleButton.this.action();
+					armTimer(500,false);
 				}
 				
-				Transition cdouble = new ReleaseOnShape(SimpleButton.this.buttonNumber, ">> over") {
+				Transition to = new TimeOut(">> over") {
+					public void action() {
+						disarmTimer();
+					}
+				};
+				
+				Transition cdouble = new PressOnShape(SimpleButton.this.buttonNumber, ">> suiteClick");
+			};
+			
+			State suiteClick = new State() {
+				public void enter() {
+					armTimer(1000, false);
+				}
+				
+				Transition to = new TimeOut(">> pressed") {
+					public void action() {
+						disarmTimer();
+						SimpleButton.this.actionClickDemi();
+					}
+				};
+				
+				Transition rel = new ReleaseOnShape(SimpleButton.this.buttonNumber, ">> over") {
 					public void action() {
 						SimpleButton.this.rect.setFillPaint(initColor);
 						SimpleButton.this.actionDoubleClick();
 					}
 				};
-			};
-			
-			State demiClick = new State() {
-				
 			};
 		};
 		this.stateMachine.attachTo(canvas);
