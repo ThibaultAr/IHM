@@ -92,29 +92,30 @@ public class MagneticGuides extends JFrame {
 						draggedShape.translateBy(q.getX() - p.getX(), q.getY() - p.getY());
 						p = q;
 						for(CShape shape : canvas.pickAll(p)) {
-							//Vérifier si le point est sur un segment
-							if(getShape() instanceof CSegment && getShape().contains(p)) {
-								
-							}
+							if(shape instanceof CSegment) {
+								shape.setStroke(new BasicStroke(4));
+								if(!draggedShape.hasTag(magnetics.get(shape)))
+									draggedShape.addTag(magnetics.get(shape));
+							} 
 						}
 					}
 				};
-				Transition grass = new EnterOnTag(MagneticGuide.class) {
-					public void action() {
-						if(getShape() instanceof CSegment) {
-							getShape().setStroke(new BasicStroke(4));
-							draggedShape.addTag(getTag());
-						}
-					}
-				};
-				Transition unGrass = new LeaveOnTag(MagneticGuide.class) {
-					public void action() {
-						if(getShape() instanceof CSegment) {
-							getShape().setStroke(new BasicStroke(2));
-							draggedShape.removeTag((CExtensionalTag) getTag());
-						}
-					}
-				};
+//				Transition grass = new EnterOnTag(MagneticGuide.class) {
+//					public void action() {
+//						if(getShape() instanceof CSegment) {
+//							getShape().setStroke(new BasicStroke(4));
+//							draggedShape.addTag(getTag());
+//						}
+//					}
+//				};
+//				Transition unGrass = new LeaveOnTag(MagneticGuide.class) {
+//					public void action() {
+//						if(getShape() instanceof CSegment) {
+//							getShape().setStroke(new BasicStroke(2));
+//							draggedShape.removeTag((CExtensionalTag) getTag());
+//						}
+//					}
+//				};
 
 				Transition release = new Release(BUTTON1, ">> start") {
 				};
