@@ -34,6 +34,7 @@ public class MagneticGuides extends JFrame {
 	private Canvas canvas;
 	private CExtensionalTag oTag;
 	private CStateMachine stateMachine;
+	private boolean hiddenGuides = false;
 
 	public MagneticGuides(String title, int width, int height) {
 		super(title);
@@ -53,6 +54,37 @@ public class MagneticGuides extends JFrame {
 			private Map<CSegment, MagneticGuide> magnetics = new HashMap<CSegment, MagneticGuide>();
 
 			public State start = new State() {
+				Transition hideShowGuide = new Press(BUTTON2, CONTROL_SHIFT) {
+					public void action() {
+						if (hiddenGuides) {
+							for(CShape shape : magnetics.keySet())
+								shape.setTransparencyOutline(1.f);
+						} else {
+							for(CShape shape : magnetics.keySet())
+								shape.setTransparencyOutline(0.f);					
+						}
+						hiddenGuides = !hiddenGuides;
+					}
+				};
+				
+				Transition deleteGuide = new PressOnTag(MagneticGuide.class, BUTTON2, CONTROL) {
+					public void action() {
+						CShape deletedShape = (CShape) getShape();
+						for (CShape shape : magnetics.get(deletedShape).getFilledShapes()) {
+							if(magnetics.get(deletedShape).isHorizontal()) {
+								if (shape.contains(deletedShape.getCenterX(), shape.getCenterY()) != null)
+									shape.removeTag(magnetics.get(deletedShape));
+							} else {
+								if (shape.contains(shape.getCenterX(), deletedShape.getCenterY()) != null)
+									shape.removeTag(magnetics.get(deletedShape));
+							}
+						}
+						
+						magnetics.remove(deletedShape);
+						canvas.removeShape(deletedShape);
+					}
+				};
+				
 				Transition pressCanvas1 = new Press(BUTTON1, ">> start") {
 					public void action() {
 						CSegment seg = canvas.newSegment(-canvas.getWidth() * 100, getPoint().getY(),
