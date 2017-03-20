@@ -2,7 +2,9 @@ package e214.skeleton;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.List;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,9 +16,6 @@ import fr.lri.swingstates.canvas.CSegment;
 import fr.lri.swingstates.canvas.CShape;
 import fr.lri.swingstates.canvas.CStateMachine;
 import fr.lri.swingstates.canvas.Canvas;
-import fr.lri.swingstates.canvas.transitions.DragOnTag;
-import fr.lri.swingstates.canvas.transitions.EnterOnTag;
-import fr.lri.swingstates.canvas.transitions.LeaveOnTag;
 import fr.lri.swingstates.canvas.transitions.PressOnTag;
 import fr.lri.swingstates.canvas.transitions.ReleaseOnTag;
 import fr.lri.swingstates.debug.StateMachineVisualization;
@@ -44,6 +43,8 @@ public class MagneticGuides extends JFrame {
 
 		oTag = new CExtensionalTag(canvas) {
 		};
+		
+		ArrayList<CShape> tagsThrough = new ArrayList<CShape>();
 
 		stateMachine = new CStateMachine() {
 
@@ -96,26 +97,18 @@ public class MagneticGuides extends JFrame {
 						for(CShape shape : canvas.pickAll(p)) {
 							if(shape instanceof CSegment) {
 								shape.setStroke(new BasicStroke(4));
-								if(!draggedShape.hasTag(magnetics.get(shape)))
+								if(!draggedShape.hasTag(magnetics.get(shape))) {
 									draggedShape.addTag(magnetics.get(shape));
-							} 
+									tagsThrough.add(shape);
+								}
+							}
 						}
-					}
-				};
-//				Transition grass = new EnterOnTag(MagneticGuide.class) {
-//					public void action() {
-//						if(getShape() instanceof CSegment) {
-//							getShape().setStroke(new BasicStroke(4));
-//							draggedShape.addTag(getTag());
-//						}
-//					}
-//				};
-				
-				Transition unGrass = new LeaveOnTag(MagneticGuide.class) {
-					public void action() {
-						if(getShape() instanceof CSegment) {
-							getShape().setStroke(new BasicStroke(2));
-							draggedShape.removeTag((CExtensionalTag) getTag());
+						
+						for(CShape shape : tagsThrough) {
+							if(draggedShape.hasTag(magnetics.get(shape)) && !canvas.pickAll(p).contains(shape)) {
+								shape.setStroke(new BasicStroke(2));
+								draggedShape.removeTag(magnetics.get(shape));
+							}
 						}
 					}
 				};
