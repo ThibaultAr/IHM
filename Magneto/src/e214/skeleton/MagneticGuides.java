@@ -58,6 +58,7 @@ public class MagneticGuides extends JFrame {
 								canvas.getWidth() * 100, getPoint().getY());
 						MagneticGuide magnetic = new MagneticGuide(canvas, seg);
 						magnetics.put(seg, magnetic);
+						magnetic.belowAll();
 					}
 				};
 
@@ -67,6 +68,7 @@ public class MagneticGuides extends JFrame {
 								getPoint().getX(), canvas.getHeight() * 100);
 						MagneticGuide magnetic = new MagneticGuide(canvas, seg);
 						magnetics.put(seg, magnetic);
+						magnetic.belowAll();
 					}
 				};
 
@@ -108,21 +110,24 @@ public class MagneticGuides extends JFrame {
 //						}
 //					}
 //				};
-//				Transition unGrass = new LeaveOnTag(MagneticGuide.class) {
-//					public void action() {
-//						if(getShape() instanceof CSegment) {
-//							getShape().setStroke(new BasicStroke(2));
-//							draggedShape.removeTag((CExtensionalTag) getTag());
-//						}
-//					}
-//				};
+				
+				Transition unGrass = new LeaveOnTag(MagneticGuide.class) {
+					public void action() {
+						if(getShape() instanceof CSegment) {
+							getShape().setStroke(new BasicStroke(2));
+							draggedShape.removeTag((CExtensionalTag) getTag());
+						}
+					}
+				};
 
 				Transition release = new Release(BUTTON1, ">> start") {
 				};
 				
 				Transition releaseOnTag = new ReleaseOnTag(MagneticGuide.class, BUTTON1, ">> start") {
 					public void action() {						
-						getShape().setStroke(new BasicStroke(2));
+						for(CShape shape : canvas.pickAll(p))
+							if(shape instanceof CSegment)
+								shape.setStroke(new BasicStroke(2));
 					}
 				};
 				
