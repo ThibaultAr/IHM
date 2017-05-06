@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="fr.lri.swingstates.canvas.transitions.PressOnShape"/>
+<fullyQualifiedTypeName name="fr.lri.swingstates.canvas.transitions.ReleaseOnShape"/>
+<fullyQualifiedTypeName name="fr.lri.swingstates.canvas.transitions.LeaveOnShape"/>
+<fullyQualifiedTypeName name="fr.lri.swingstates.canvas.transitions.EnterOnShape"/>
+</qualifiedTypeNameHistroy>

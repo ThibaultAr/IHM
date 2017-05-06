@@ -1,3 +1,6 @@
+Arloing Thibault
+Dubois Yann
+
 # Magnetic guides
 
 ## Commands
